@@ -49,8 +49,8 @@ class BoloBot():
         return float(self._get_tourist_exchange_rate_faster())*self.BB_PERCENTAGE
 
     def _get_euro_exchange_rate(self):
-        usd_brl = Currency('EURBRL')
-        return usd_brl.get_bid()
+        eur_brl = Currency('EURBRL')
+        return eur_brl.get_bid()
 
     def _get_user(self, id):
         member = json.loads(self._sc.api_call("users.info", user=id))["user"]
