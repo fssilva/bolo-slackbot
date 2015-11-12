@@ -68,9 +68,7 @@ class BoloBot():
 
     @timeout(25)
     def _reply_message(self, message, user_id, channel):
-        if message == "oi" and self._get_user(user_id) != "bolo":
-            self._send_message(user_id, channel, "oi")
-        elif message == "!euro":
+        if message == "!euro":
             self._send_rate(user_id, channel, self._get_euro_exchange_rate, "EUR")
         elif message in self._currency_types.keys():
             func = self._currency_types.get(message)
@@ -82,7 +80,7 @@ class BoloBot():
         while True:
             new_events = self._sc.rtm_read()
             for evt in new_events:
-                #print(evt)
+                print(evt)
                 if "type" in evt:
                     if evt["type"] == "message" and "text" in evt:
                         channel = evt["channel"]
