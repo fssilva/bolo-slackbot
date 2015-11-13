@@ -19,11 +19,11 @@ class BoloBot():
     def __init__(self, token):
         self._sc = SlackClient(token)
         self._driver = webdriver.PhantomJS()
-        self._currency_types = {'!dtc': self._get_tourist_exchange_rate,
+        self._currency_types = {'!dtc2': self._get_tourist_exchange_rate,
                               '!dollar': self._get_dollar_exchange_rate,
-                              '!bb': self._get_bb_exchange_rate,
-                              '!bb2': self._get_bb_exchange_rate_faster,
-                              '!dtc2': self._get_tourist_exchange_rate_faster}
+                              '!bb2': self._get_bb_exchange_rate,
+                              '!bb': self._get_bb_exchange_rate_faster,
+                              '!dtc': self._get_tourist_exchange_rate_faster}
 
     def _get_tourist_exchange_rate_faster(self):
         response = requests.get(self.INFOMONEY_URL)
@@ -60,19 +60,28 @@ class BoloBot():
         self._sc.api_call('chat.postMessage', as_user='true:',
                           channel=channel, text=text)
 
-    def _send_rate(self, user, channel, rate_func, currency='USD'):
+    def _send_rate(self, user, channel, rate_func, currency='USD', quantity=1):
         user_name = self._get_user(user)
-        rate = rate_func()
-        message = '<@%s>: 1 %s = %.4f BRL' % (user_name, currency, float(rate))
+        rate = float(rate_func())
+        total = '%.4f' % (rate * quantity)
+        message = '<@%s>: %s %s = %s BRL' % (user_name, str(quantity), currency, total)
         self._send_message(user, channel, message)
 
     @timeout(25)
     def _reply_message(self, message, user_id, channel):
-        if message == '!euro':
-            self._send_rate(user_id, channel, self._get_euro_exchange_rate, 'EUR')
-        elif message in self._currency_types.keys():
-            func = self._currency_types.get(message)
-            self._send_rate(user_id, channel, func)
+        message_list = message.split()
+        command = message_list[0]
+        quantity = 1
+        if len(message_list) > 1:
+            try:
+                quantity = float(message_list[1])
+            except ValueError as e:
+                pass
+        if command == '!euro':
+            self._send_rate(user_id, channel, self._get_euro_exchange_rate, 'EUR', quantity)
+        elif command in self._currency_types.keys():
+            func = self._currency_types.get(command)
+            self._send_rate(user_id, channel, func, quantity=quantity)
 
     def run(self):
         if not self._sc.rtm_connect():
