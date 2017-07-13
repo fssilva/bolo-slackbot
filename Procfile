@@ -1,1 +1,1 @@
-worker: python main.py
+console: python main.py
