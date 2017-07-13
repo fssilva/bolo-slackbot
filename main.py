@@ -8,7 +8,7 @@ DOTENV_PATH = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(DOTENV_PATH)
 
 
-BOT_ID = os.environ.get('BOT_ID') #bolobot
+BOT_ID = os.environ.get('BOT_ID')
 AT_BOT = "<@" + BOT_ID + ">"
 
 slack_client = SlackClient(os.environ.get('BOT_TOKEN'))
